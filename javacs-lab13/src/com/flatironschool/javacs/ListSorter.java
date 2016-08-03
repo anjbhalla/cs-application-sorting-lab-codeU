@@ -64,7 +64,44 @@ public class ListSorter<T> {
 	 */
 	public List<T> mergeSort(List<T> list, Comparator<T> comparator) {
         // FILL THIS IN!
-        return null;
+		int half = list.size()/2;
+		List<T> list1 = new ArrayList<T>();
+		List<T> list2 = new ArrayList<T>();
+		for (int i = 0; i < list.size(); i++) {
+			if (i > half) {
+				list2.add(list.get(i));
+			}
+			else {
+				list1.add(list.get(i));
+			}
+		}
+		if (list1.size() < 6) {
+			insertionSort(list1, comparator);		
+			insertionSort(list2, comparator);
+		}
+		else {
+			list1 = mergeSort(list1, comparator);
+			list2 = mergeSort(list1, comparator);
+		}
+		List<T> sorted = merge(list1, list2, comparator);
+	        return sorted;
+	}
+
+	private List<T> merge(List<T> list1, List<T> list2, Comparator<T> comparator) {
+		int i = 0;
+		for (int k = 0; k < list2.size(); k++) {
+			T elt = list2.get(k);
+			int j = 0;
+			while (j == 0) {
+				int cmp = comparator.compare(elt, list1.get(i));
+				if (cmp <= 0) {
+					list1.add(i, elt);
+					j++;
+				}
+				i++;
+			}
+		}
+		return list1;
 	}
 
 	/**
@@ -76,8 +113,12 @@ public class ListSorter<T> {
 	 */
 	public void heapSort(List<T> list, Comparator<T> comparator) {
         // FILL THIS IN!
+		PriorityQueue<T> heap = new PriorityQueue(list.size(), comparator);
+		heap.addAll(list);
+		for (int j = 0; j < list.size(); j++) {
+			list.set(j, heap.poll());
+		}
 	}
-
 	
 	/**
 	 * Returns the largest `k` elements in `list` in ascending order.
@@ -90,7 +131,25 @@ public class ListSorter<T> {
 	 */
 	public List<T> topK(int k, List<T> list, Comparator<T> comparator) {
         // FILL THIS IN!
-        return null;
+		PriorityQueue<T> boundedHeap = new PriorityQueue(k, comparator);
+		for (int i = 0; i < list.size(); i++) {
+			T elt = list.get(i);
+			if (boundedHeap.size() < k) {
+				boundedHeap.offer(elt);
+			}
+			else {
+				int cmp = comparator.compare(elt, boundedHeap.peek());
+				if (cmp > 0) {
+					boundedHeap.poll();
+					boundedHeap.offer(elt);
+				}
+			}
+		}
+		List<T> topK = new ArrayList<T>();
+		for (int j = 0; j < k; j++) {
+                        topK.add(boundedHeap.poll());
+                }
+	        return topK;
 	}
 
 	
